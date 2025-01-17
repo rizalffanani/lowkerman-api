@@ -2,5 +2,5 @@
 # git add .
 
 /node_modules
-/assets
+/src/assets
 .env.backup
