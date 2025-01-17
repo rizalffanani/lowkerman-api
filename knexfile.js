@@ -1,5 +1,5 @@
-// Update with your config settings.
-
+import dotenv from 'dotenv'
+dotenv.config()
 /**
 * @type { Object.<string, import("knex").Knex.Config> }
 */
@@ -7,10 +7,10 @@ export default {
     development: {
         client: 'mysql2',
         connection: {
-            host: 'localhost',
-            user: 'root',
-            password: '',
-            database: 'lowkerman',
+            host: process.env.DB_HOST || 'localhost',
+            user: process.env.DB_USER || 'root',
+            password: process.env.DB_PASSWORD || '',
+            database: process.env.DB_NAME || 'lowkerman',
         },
         migrations: {
             directory: './src/database/migrations',
@@ -21,11 +21,11 @@ export default {
     },
 
     staging: {
-        client: 'postgresql',
+        client: 'mysql2',
         connection: {
-            database: 'my_db',
-            user: 'username',
-            password: 'password',
+            user: process.env.STAGING_DB_USER || 'username',
+            password: process.env.STAGING_DB_PASSWORD || 'password',
+            database: process.env.STAGING_DB_NAME || 'my_db',
         },
         pool: {
             min: 2,
@@ -37,11 +37,11 @@ export default {
     },
 
     production: {
-        client: 'postgresql',
+        client: 'mysql2',
         connection: {
-            database: 'my_db',
-            user: 'username',
-            password: 'password',
+            user: process.env.PRODUCTION_DB_USER || 'username',
+            password: process.env.PRODUCTION_DB_PASSWORD || 'password',
+            database: process.env.PRODUCTION_DB_NAME || 'my_db',
         },
         pool: {
             min: 2,
@@ -51,4 +51,4 @@ export default {
             tableName: 'knex_migrations',
         },
     },
-};
+}
