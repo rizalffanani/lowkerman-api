@@ -15,8 +15,8 @@ import authRoutes from './routes/auth.js';
 import companiesRoutes from './routes/companies.js';
 
 // Gunakan routes
-app.use('/api/auth', authRoutes);
-app.use('/api/companies', companiesRoutes);
+app.use('/cockpit/auth', authRoutes);
+app.use('/cockpit/companies', companiesRoutes);
 app.use('/assets/img/company', express.static(path.join(__dirname, './assets/img/company')));
 
 app.get('/', (req, res) => {

@@ -3,7 +3,7 @@ import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
 
 import { authenticateToken, authorizeRole } from '../middlewares/auth.js'
-import { addToBlacklist, isBlacklisted } from '../config/tokenBlacklist.js'
+import { addToBlacklist } from '../config/tokenBlacklist.js'
 import db from '../config/knex.js'
 
 const router = express.Router()
@@ -75,10 +75,6 @@ router.post('/logout', authenticateToken, (req, res) => {
     const token = req.headers['authorization'].split(' ')[1]
     addToBlacklist(token)
     res.status(200).json({ message: 'Logout successful' })
-})
-
-router.get('/admin', authenticateToken, authorizeRole('user'), (req, res) => {
-    res.status(200).json({ message: `Welcome Admin ${req.user.username}` })
 })
 
 export default router

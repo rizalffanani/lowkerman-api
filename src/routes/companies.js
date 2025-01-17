@@ -1,6 +1,6 @@
 import express from 'express'
 
-import adminOnly from '../middlewares/adminOnly.js'
+import { authenticateToken, authorizeRole } from '../middlewares/auth.js'
 import pagination from '../middlewares/pagination.js'
 import { nameToSlug } from '../utils/slugify.js'
 import createUploader from '../config/multer.js'
@@ -11,7 +11,7 @@ const router = express.Router()
 const companyUploader = createUploader('src/assets/img/company')
 
 // GET: Ambil semua perusahaan
-router.get('/', adminOnly, pagination, async (req, res) => {
+router.get('/', authenticateToken, authorizeRole(['admin']), pagination, async (req, res) => {
     const { offset, limit } = req.pagination
 
     try {
@@ -34,7 +34,7 @@ router.get('/', adminOnly, pagination, async (req, res) => {
 })
 
 // POST: Tambah perusahaan baru
-router.post('/', adminOnly, companyUploader.single('logo'), async (req, res) => {
+router.post('/', authenticateToken, authorizeRole('admin'), companyUploader.single('logo'), async (req, res) => {
     const { name, desc, address, web, ig, active } = req.body
     const logo = req.file ? req.file.filename : 'default.png'
 
@@ -68,7 +68,7 @@ router.post('/', adminOnly, companyUploader.single('logo'), async (req, res) => 
 })
 
 // GET: Ambil perusahaan berdasarkan ID
-router.get('/:id', adminOnly, async (req, res) => {
+router.get('/:id', authenticateToken, authorizeRole('admin'), async (req, res) => {
     const { id } = req.params
 
     try {
@@ -83,7 +83,7 @@ router.get('/:id', adminOnly, async (req, res) => {
 })
 
 // PUT: Update perusahaan berdasarkan ID
-router.put('/:id', adminOnly, companyUploader.single('logo'), async (req, res) => {
+router.put('/:id', authenticateToken, authorizeRole('admin'), companyUploader.single('logo'), async (req, res) => {
     const { id } = req.params
     const { name, desc, address, web, ig, active } = req.body
     const logo = req.file ? req.file.filename : null
@@ -113,7 +113,7 @@ router.put('/:id', adminOnly, companyUploader.single('logo'), async (req, res) =
 })
 
 // DELETE: Hapus perusahaan berdasarkan ID
-router.delete('/:id', adminOnly, async (req, res) => {
+router.delete('/:id', authenticateToken, authorizeRole('admin'), async (req, res) => {
     const { id } = req.params
 
     try {
