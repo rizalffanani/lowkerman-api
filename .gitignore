@@ -1,3 +1,6 @@
+# git rm -rf --cached .
+# git add .
+
 /node_modules
 /assets
 .env.backup
