@@ -1,12 +1,12 @@
-const express = require('express')
-const bcrypt = require('bcryptjs')
-const jwt = require('jsonwebtoken')
-const router = express.Router()
-const { authenticateToken, authorizeRole } = require('../middlewares/auth.js')
-const { addToBlacklist, isBlacklisted } = require('../config/tokenBlacklist')
-const db = require('../config/knex.js')
+import express from 'express'
+import bcrypt from 'bcryptjs'
+import jwt from 'jsonwebtoken'
 
-const users = [] // Sementara simpan data di array (nanti bisa pakai database)
+import { authenticateToken, authorizeRole } from '../middlewares/auth.js'
+import { addToBlacklist, isBlacklisted } from '../config/tokenBlacklist.js'
+import db from '../config/knex.js'
+
+const router = express.Router()
 
 // Register endpoint
 router.post('/register', async (req, res) => {
@@ -81,4 +81,4 @@ router.get('/admin', authenticateToken, authorizeRole('user'), (req, res) => {
     res.status(200).json({ message: `Welcome Admin ${req.user.username}` })
 })
 
-module.exports = router
+export default router

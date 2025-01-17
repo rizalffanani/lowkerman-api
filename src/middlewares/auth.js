@@ -1,7 +1,7 @@
-const jwt = require('jsonwebtoken')
-const { isBlacklisted } = require('../config/tokenBlacklist')
+import jwt from 'jsonwebtoken'
+import { isBlacklisted } from '../config/tokenBlacklist.js'
 
-const authenticateToken = (req, res, next) => {
+export const authenticateToken = (req, res, next) => {
     const token = req.headers['authorization']
     if (!token) return res.status(401).json({ message: 'Access Denied' })
 
@@ -20,11 +20,9 @@ const authenticateToken = (req, res, next) => {
     }
 }
 
-const authorizeRole = (role) => (req, res, next) => {
+export const authorizeRole = (role) => (req, res, next) => {
     if (req.user.role !== role) {
         return res.status(403).json({ message: 'Access Denied: Insufficient Permissions' })
     }
     next()
 }
-
-module.exports = { authenticateToken, authorizeRole }

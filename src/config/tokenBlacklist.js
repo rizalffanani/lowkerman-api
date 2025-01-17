@@ -1,11 +1,9 @@
-const blacklist = new Set()
+const blacklist = new Set();
 
-const addToBlacklist = (token) => {
-    blacklist.add(token)
-}
+export const addToBlacklist = (token) => {
+    blacklist.add(token);
+};
 
-const isBlacklisted = (token) => {
-    return blacklist.has(token)
-}
-
-module.exports = { addToBlacklist, isBlacklisted }
+export const isBlacklisted = (token) => {
+    return blacklist.has(token);
+};

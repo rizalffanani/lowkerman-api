@@ -1,9 +1,11 @@
-const express = require('express')
-const db = require('../config/knex')
-const adminOnly = require('../middlewares/adminOnly')
-const pagination = require('../middlewares/pagination')
-const { nameToSlug } = require('../utils/slugify')
-const createUploader = require('../config/multer')
+import express from 'express'
+
+import adminOnly from '../middlewares/adminOnly.js'
+import pagination from '../middlewares/pagination.js'
+import { nameToSlug } from '../utils/slugify.js'
+import createUploader from '../config/multer.js'
+
+import db from '../config/knex.js'
 
 const router = express.Router()
 const companyUploader = createUploader('src/assets/img/company')
@@ -125,4 +127,4 @@ router.delete('/:id', adminOnly, async (req, res) => {
     }
 })
 
-module.exports = router
+export default router

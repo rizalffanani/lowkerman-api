@@ -1,5 +1,5 @@
-const multer = require('multer');
-const path = require('path');
+import multer from 'multer'
+import path from 'path'
 
 // Fungsi untuk membuat konfigurasi storage dinamis
 const dynamicStorage = (folderName) =>
@@ -32,4 +32,4 @@ const createUploader = (folderName) =>
         limits: { fileSize: 2 * 1024 * 1024 }, // Maksimal 2 MB
     });
 
-module.exports = createUploader;
+export default createUploader;
