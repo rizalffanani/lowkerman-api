@@ -1,22 +1,26 @@
 import jwt from 'jsonwebtoken'
 import { isBlacklisted } from '../config/tokenBlacklist.js'
+import dotenv from 'dotenv'
+
+dotenv.config()
 
 export const authenticateToken = (req, res, next) => {
-    const token = req.headers['authorization']
+    const token = req.headers['authorization']?.split(' ')[1]
+
     if (!token) return res.status(401).json({ message: 'Access Denied' })
 
-    const tokenValue = token.split(' ')[1]
-
-    if (isBlacklisted(tokenValue)) {
-        return res.status(403).json({ message: 'Token has been revoked' })
+    if (isBlacklisted(token)) {
+        return res.status(403).json({ message: 'Token has been blacklisted' })
     }
 
     try {
-        const verified = jwt.verify(token.split(' ')[1], 'lowkerman_secret_key_api')
-        req.user = verified
-        next()
+        jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
+            if (err) return res.status(403).json({ message: 'Invalid or expired token' })
+            req.user = user // Simpan informasi user dari token
+            next()
+        })
     } catch (err) {
-        res.status(403).json({ message: 'Invalid Token' })
+        res.status(403).json({ message: `Invalid Token` })
     }
 }
 

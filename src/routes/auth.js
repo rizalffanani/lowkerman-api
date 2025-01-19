@@ -2,10 +2,12 @@ import express from 'express'
 import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
 
-import { authenticateToken, authorizeRole } from '../middlewares/auth.js'
-import { addToBlacklist } from '../config/tokenBlacklist.js'
+import { authenticateToken } from '../middlewares/auth.js'
 import db from '../config/knex.js'
+import dotenv from 'dotenv'
+import { addToBlacklist } from '../config/tokenBlacklist.js'
 
+dotenv.config()
 const router = express.Router()
 
 // Register endpoint
@@ -59,22 +61,80 @@ router.post('/login', async (req, res) => {
             return res.status(400).json({ message: 'User non active' })
         }
 
-        const token = jwt.sign(
+        const accessToken = jwt.sign(
             { id: user.id, username: user.username, role: user.role },
-            'lowkerman_secret_key_api', // Ganti dengan secret key yang aman
-            { expiresIn: '1h' } // Token berlaku selama 1 jam
+            process.env.JWT_SECRET, // Ganti dengan secret key yang aman
+            { expiresIn: '20s' } // Token berlaku selama 1 jam
         )
 
-        res.status(200).json({ message: 'Login successful', token })
+        const refreshToken = jwt.sign(
+            { id: user.id, username: user.username, role: user.role },
+            process.env.JWT_REFRESH_SECRET,
+            { expiresIn: '7d' } // Refresh token valid selama 7 hari
+        )
+
+        await db('panel_refresh_tokens').insert({ token: refreshToken, user_id: user.id })
+
+        res.status(200).json({
+            message: 'Login successful',
+            accessToken,
+            refreshToken
+        })
     } catch (err) {
         res.status(500).json({ message: 'Database error', error: err.message })
     }
 })
 
-router.post('/logout', authenticateToken, (req, res) => {
-    const token = req.headers['authorization'].split(' ')[1]
-    addToBlacklist(token)
-    res.status(200).json({ message: 'Logout successful' })
+router.post('/refresh', async (req, res) => {
+    const { refreshToken } = req.body
+
+    if (!refreshToken) {
+        return res.status(400).json({ message: 'Refresh token is required' })
+    }
+
+    try {
+        // Cek apakah token ada di database
+        const tokenExists = await db('panel_refresh_tokens').where({ token: refreshToken }).first()
+        if (!tokenExists) {
+            return res.status(403).json({ message: 'Invalid refresh token' })
+        }
+
+        // Validasi refresh token
+        jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET, (err, user) => {
+            if (err) return res.status(403).json({ message: 'Invalid refresh token' })
+
+            const accessToken = jwt.sign({ id: user.id, username: user.username, role: user.role }, process.env.JWT_SECRET, {
+                expiresIn: '2m',
+            })
+            res.status(200).json({ accessToken })
+        })
+    } catch (err) {
+        res.status(403).json({ message: 'Invalid or expired refresh token' })
+    }
+})
+
+router.post('/logout', authenticateToken, async (req, res) => {
+    const { refreshToken } = req.body
+    const token = req.headers.authorization?.split(' ')[1]
+
+    if (!refreshToken) {
+        return res.status(400).json({ message: 'Refresh token is required' })
+    }
+
+    try {
+        const tokenExists = await db('panel_refresh_tokens').where({ token: refreshToken }).first()
+
+        if (!tokenExists) {
+            return res.status(403).json({ message: 'Invalid refresh token' })
+        }
+
+        await db('panel_refresh_tokens').where({ token: refreshToken }).del()
+        if (token) addToBlacklist(token)
+
+        res.status(200).json({ message: 'Logout successful' })
+    } catch (err) {
+        res.status(500).json({ message: 'Server error', error: err.message })
+    }
 })
 
 export default router
