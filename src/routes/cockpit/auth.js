@@ -1,11 +1,11 @@
 import express from 'express'
 import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
-
-import { authenticateToken } from '../middlewares/auth.js'
-import db from '../config/knex.js'
 import dotenv from 'dotenv'
-import { addToBlacklist } from '../config/tokenBlacklist.js'
+
+import { authenticateToken } from '../../middlewares/auth.js'
+import db from '../../config/knex.js'
+import { addToBlacklist } from '../../config/tokenBlacklist.js'
 
 dotenv.config()
 const router = express.Router()
@@ -42,14 +42,14 @@ router.post('/login', async (req, res) => {
     const { username, password } = req.body
 
     if (!username || !password) {
-        return res.status(404).json({ message: 'Username and password are required' })
+        return res.status(401).json({ message: 'Username and password are required' })
     }
 
     try {
         const user = await db('panel_users').where({ username }).first()
 
         if (!user) {
-            return res.status(404).json({ message: 'User not found' })
+            return res.status(401).json({ message: 'User not found' })
         }
 
         const isMatch = await bcrypt.compare(password, user.password)
@@ -64,7 +64,7 @@ router.post('/login', async (req, res) => {
         const accessToken = jwt.sign(
             { id: user.id, username: user.username, role: user.role },
             process.env.JWT_SECRET, // Ganti dengan secret key yang aman
-            { expiresIn: '20s' } // Token berlaku selama 1 jam
+            { expiresIn: '1d' } // Token berlaku selama 1 jam
         )
 
         const refreshToken = jwt.sign(
@@ -78,7 +78,14 @@ router.post('/login', async (req, res) => {
         res.status(200).json({
             message: 'Login successful',
             accessToken,
-            refreshToken
+            refreshToken,
+            user: {
+                id: user.id,
+                username: user.username,
+                role: user.role,
+                email: user.email, // Sesuaikan dengan kolom yang tersedia di tabel Anda
+                active: user.active
+            }
         })
     } catch (err) {
         res.status(500).json({ message: 'Database error', error: err.message })

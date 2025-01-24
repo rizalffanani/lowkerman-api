@@ -1,11 +1,11 @@
 import express from 'express'
 
-import { authenticateToken, authorizeRole } from '../middlewares/auth.js'
-import pagination from '../middlewares/pagination.js'
-import { nameToSlug } from '../utils/slugify.js'
-import createUploader from '../config/multer.js'
+import { authenticateToken, authorizeRole } from '../../middlewares/auth.js'
+import pagination from '../../middlewares/pagination.js'
+import { nameToSlug } from '../../utils/slugify.js'
+import createUploader from '../../config/multer.js'
 
-import db from '../config/knex.js'
+import db from '../../config/knex.js'
 
 const router = express.Router()
 const companyUploader = createUploader('src/assets/img/company')
