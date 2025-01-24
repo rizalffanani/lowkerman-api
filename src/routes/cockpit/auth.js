@@ -64,7 +64,7 @@ router.post('/login', async (req, res) => {
         const accessToken = jwt.sign(
             { id: user.id, username: user.username, role: user.role },
             process.env.JWT_SECRET, // Ganti dengan secret key yang aman
-            { expiresIn: '1d' } // Token berlaku selama 1 jam
+            { expiresIn: '10m' } // Token berlaku selama 1 jam
         )
 
         const refreshToken = jwt.sign(
