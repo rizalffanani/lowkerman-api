@@ -12,14 +12,17 @@ const companyUploader = createUploader('src/assets/img/company')
 
 // GET: Ambil semua perusahaan
 router.get('/', authenticateToken, authorizeRole(['admin']), pagination, async (req, res) => {
-    const { offset, limit } = req.pagination
+    const { page = 1, limit = 10, search = '' } = req.query;
 
     try {
-        const totalCompanies = await db('companies').count('id_company as count').first()
+        const offset = (page - 1) * limit;
         const data = await db('companies')
             .select('*')
+            .where('name', 'like', `%${search}%`)
             .offset(offset)
             .limit(limit)
+
+        const totalCompanies = await db('companies').count('id_company as count').where('name', 'like', `%${search}%`).first()
 
         res.status(200).json({
             total: totalCompanies.count,
