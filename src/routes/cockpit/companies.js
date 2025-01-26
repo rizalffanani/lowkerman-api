@@ -19,6 +19,7 @@ router.get('/', authenticateToken, authorizeRole(['admin']), pagination, async (
         const data = await db('companies')
             .select('*')
             .where('name', 'like', `%${search}%`)
+            .orderBy('id_company', 'desc')
             .offset(offset)
             .limit(limit)
 
@@ -41,7 +42,7 @@ router.post('/', authenticateToken, authorizeRole('admin'), companyUploader.sing
     const { name, desc, address, web, ig, active } = req.body
     const logo = req.file ? req.file.filename : 'default.png'
 
-    if (!name || !address || !ig) {
+    if (!name || !ig) {
         return res.status(400).json({ message: 'Name, address, IG are required' })
     }
 
@@ -91,7 +92,7 @@ router.put('/:id', authenticateToken, authorizeRole('admin'), companyUploader.si
     const { name, desc, address, web, ig, active } = req.body
     const logo = req.file ? req.file.filename : null
 
-    if (!name || !address || !ig) {
+    if (!name || !ig) {
         return res.status(400).json({ message: 'Name, address, IG are required' })
     }
 
