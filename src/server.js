@@ -16,8 +16,8 @@ const app = express()
 // Enable CORS
 app.use(cors({
     origin: 'http://localhost:3000', // Allow requests from your frontend origin
-    methods: ['GET', 'POST', 'PUT', 'DELETE'], // Allowed HTTP methods
-    credentials: true, // Allow cookies and authorization headers if needed
+    methods: ['GET', 'POST', 'PATCH', 'PUT', 'DELETE'], // Allowed HTTP methods
+    credentials: true// Allow cookies and authorization headers if needed
 }));
 
 app.use(bodyParser.json())

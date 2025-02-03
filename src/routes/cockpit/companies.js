@@ -131,4 +131,28 @@ router.delete('/:id', authenticateToken, authorizeRole('admin'), async (req, res
     }
 })
 
+router.patch('/:id/status', authenticateToken, authorizeRole('admin'), async (req, res) => {
+    console.log('Request Body:', req.body);
+    const { id } = req.params;
+    const { active } = req.body
+
+    if (!active) {
+        return res.status(400).json({ message: `error ${active}` })
+    }
+
+    try {
+        const updated = await db('companies').where({ "id_company": id }).update({
+            active
+        })
+
+        if (!updated) {
+            return res.status(404).json({ message: 'Company not found' })
+        }
+        res.status(200).json({ message: 'Status updated successfully' });
+    } catch (err) {
+        res.status(500).json({ message: 'Database error', error: err.message })
+    }
+
+});
+
 export default router
