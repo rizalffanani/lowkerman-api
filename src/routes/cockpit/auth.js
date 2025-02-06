@@ -82,6 +82,7 @@ router.post('/login', async (req, res) => {
             user: {
                 id: user.id,
                 username: user.username,
+                name: user.nama,
                 role: user.role,
                 email: user.email, // Sesuaikan dengan kolom yang tersedia di tabel Anda
                 active: user.active
