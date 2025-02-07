@@ -26,11 +26,17 @@ app.use(bodyParser.json())
 import authRoutes from './routes/cockpit/auth.js'
 import companiesRoutes from './routes/cockpit/companies.js'
 import panelUsersRoutes from './routes/cockpit/panelUsers.js'
+import panelCountriesRoutes from './routes/cockpit/locationCountries.js'
+import panelProvincesRoutes from './routes/cockpit/locationProvinces.js'
+import panelCitiesRoutes from './routes/cockpit/locationCities.js'
 
 // Gunakan routes
 app.use('/cockpit/auth', authRoutes)
-app.use('/cockpit/companies', companiesRoutes)
-app.use('/cockpit/panel-users', panelUsersRoutes)
+app.use('/cockpit/company', companiesRoutes)
+app.use('/cockpit/panel-user', panelUsersRoutes)
+app.use('/cockpit/country', panelCountriesRoutes)
+app.use('/cockpit/province', panelProvincesRoutes)
+app.use('/cockpit/city', panelCitiesRoutes)
 app.use('/assets/img/company', express.static(path.join(__dirname, './assets/img/company')))
 
 app.get('/', (req, res) => {

@@ -132,7 +132,6 @@ router.delete('/:id', authenticateToken, authorizeRole('admin'), async (req, res
 })
 
 router.patch('/:id/status', authenticateToken, authorizeRole('admin'), async (req, res) => {
-    console.log('Request Body:', req.body);
     const { id } = req.params;
     const { active } = req.body
 
