@@ -5,7 +5,7 @@ import db from '../../config/knex.js';
 
 const router = express.Router();
 const TABLE = 'location_cities';
-const ID_COLUMN = 'id_city';
+const ID_COLUMN = 'location_cities.id_city';
 
 const MESSAGES = {
     DATABASE_ERROR: 'Database error',
@@ -25,16 +25,21 @@ router.get('/', authenticateToken, authorizeRole(['admin']), pagination, async (
     const { page = 1, limit = 10, search = '' } = req.query;
     try {
         const offset = (page - 1) * limit;
-        const FIELDS_KEY = 'name_city'
+        const FIELDS_KEY = 'location_cities.name_city'
+        const TABLE2 = 'location_provinces'
+        const FIELDS = 'id_province'
+
         const [data, totalData] = await Promise.all([
             db(TABLE)
-                .select('*')
+                .select('location_cities.*', 'location_provinces.name_province')
+                .leftJoin(TABLE2, `${TABLE}.${FIELDS}`, `${TABLE2}.${FIELDS}`)
                 .where(FIELDS_KEY, 'like', `%${search}%`)
                 .orderBy(ID_COLUMN, 'desc')
                 .offset(offset)
                 .limit(limit),
             db(TABLE)
                 .count(`${ID_COLUMN} as count`)
+                .leftJoin(TABLE2, `${TABLE}.${FIELDS}`, `${TABLE2}.${FIELDS}`)
                 .where(FIELDS_KEY, 'like', `%${search}%`)
                 .first()
         ]);
