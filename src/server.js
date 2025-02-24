@@ -29,6 +29,7 @@ import panelUsersRoutes from './routes/cockpit/panelUsers.js'
 import panelCountriesRoutes from './routes/cockpit/locationCountries.js'
 import panelProvincesRoutes from './routes/cockpit/locationProvinces.js'
 import panelCitiesRoutes from './routes/cockpit/locationCities.js'
+import jobsRoutes from './routes/cockpit/jobs.js'
 
 // Gunakan routes
 app.use('/cockpit/auth', authRoutes)
@@ -37,6 +38,7 @@ app.use('/cockpit/panel-user', panelUsersRoutes)
 app.use('/cockpit/country', panelCountriesRoutes)
 app.use('/cockpit/province', panelProvincesRoutes)
 app.use('/cockpit/city', panelCitiesRoutes)
+app.use('/cockpit/job', jobsRoutes)
 app.use('/assets/img/company', express.static(path.join(__dirname, './assets/img/company')))
 
 app.get('/', (req, res) => {
