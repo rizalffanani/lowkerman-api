@@ -25,23 +25,46 @@ app.use(bodyParser.json())
 // Import routes
 import authRoutes from './routes/cockpit/auth.js'
 import companiesRoutes from './routes/cockpit/companies.js'
+import usersRoutes from './routes/cockpit/users.js'
 import panelUsersRoutes from './routes/cockpit/panelUsers.js'
 import panelCountriesRoutes from './routes/cockpit/locationCountries.js'
 import panelProvincesRoutes from './routes/cockpit/locationProvinces.js'
 import panelCitiesRoutes from './routes/cockpit/locationCities.js'
 import jobsRoutes from './routes/cockpit/jobs.js'
+import freelanceRoutes from './routes/cockpit/freelance.js'
+import freelanceCatRoutes from './routes/cockpit/freelanceCat.js'
+import productRoutes from './routes/cockpit/product.js'
+import productCatRoutes from './routes/cockpit/productCat.js'
+import digitalRoutes from './routes/cockpit/digitals.js'
+import testcatRoutes from './routes/cockpit/testCat.js'
+import testtypeRoutes from './routes/cockpit/testType.js'
+import coinRoutes from './routes/cockpit/coin.js'
+import paymentRoutes from './routes/cockpit/payment.js'
 import scrapperRoutes from './routes/cockpit/scrapper.js'
 
 // Gunakan routes
 app.use('/cockpit/auth', authRoutes)
 app.use('/cockpit/company', companiesRoutes)
+app.use('/cockpit/user', usersRoutes)
 app.use('/cockpit/panel-user', panelUsersRoutes)
 app.use('/cockpit/country', panelCountriesRoutes)
 app.use('/cockpit/province', panelProvincesRoutes)
 app.use('/cockpit/city', panelCitiesRoutes)
 app.use('/cockpit/job', jobsRoutes)
+app.use('/cockpit/freelance', freelanceRoutes)
+app.use('/cockpit/freelancecat', freelanceCatRoutes)
+app.use('/cockpit/product', productRoutes)
+app.use('/cockpit/productcat', productCatRoutes)
+app.use('/cockpit/digital', digitalRoutes)
+app.use('/cockpit/testcat', testcatRoutes)
+app.use('/cockpit/testtype', testtypeRoutes)
+app.use('/cockpit/coin', coinRoutes)
+app.use('/cockpit/payment', paymentRoutes)
 app.use('/cockpit/scrapper', scrapperRoutes)
-app.use('/assets/img/company', express.static(path.join(__dirname, './assets/img/company')))
+app.use('/image/company', express.static(path.join(__dirname, './assets/img/company')))
+app.use('/image/profil', express.static(path.join(__dirname, './assets/img/profil')))
+app.use('/image/product', express.static(path.join(__dirname, './assets/img/produk')))
+app.use('/image/product/digital', express.static(path.join(__dirname, './assets/img/produk/digital')))
 
 app.get('/', (req, res) => {
     res.send('lowkerman')

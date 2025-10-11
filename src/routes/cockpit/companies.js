@@ -3,12 +3,18 @@ import express from 'express'
 import { authenticateToken, authorizeRole } from '../../middlewares/auth.js'
 import pagination from '../../middlewares/pagination.js'
 import { nameToSlug } from '../../utils/slugify.js'
-import createUploader from '../../config/multer.js'
+import { createUploader } from '../../config/multer.js'
 
 import db from '../../config/knex.js'
+import fs from 'fs'
+import path from 'path'
+import { fileURLToPath } from 'url'
+import { dirname } from 'path'
 
 const router = express.Router()
 const companyUploader = createUploader('src/assets/img/company')
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = dirname(__filename)
 
 // GET: Ambil semua perusahaan
 router.get('/', authenticateToken, authorizeRole(['admin']), pagination, async (req, res) => {
@@ -39,8 +45,9 @@ router.get('/', authenticateToken, authorizeRole(['admin']), pagination, async (
 
 // POST: Tambah perusahaan baru
 router.post('/', authenticateToken, authorizeRole('admin'), companyUploader.single('logo'), async (req, res) => {
-    const { name, desc, address, web, ig, active } = req.body
+    const { name, desc, address, web, ig } = req.body
     const logo = req.file ? req.file.filename : 'default.png'
+    const active = "1"
 
     if (!name || !ig) {
         return res.status(400).json({ message: 'Name, address, IG are required' })
@@ -89,7 +96,7 @@ router.get('/:id', authenticateToken, authorizeRole('admin'), async (req, res) =
 // PUT: Update perusahaan berdasarkan ID
 router.put('/:id', authenticateToken, authorizeRole('admin'), companyUploader.single('logo'), async (req, res) => {
     const { id } = req.params
-    const { name, desc, address, web, ig, active } = req.body
+    const { name, desc, address, web, ig } = req.body
     const logo = req.file ? req.file.filename : null
 
     if (!name || !ig) {
@@ -104,7 +111,6 @@ router.put('/:id', authenticateToken, authorizeRole('admin'), companyUploader.si
             web,
             ig,
             ...(logo && { logo }),
-            active
         })
 
         if (!updated) {
@@ -121,6 +127,18 @@ router.delete('/:id', authenticateToken, authorizeRole('admin'), async (req, res
     const { id } = req.params
 
     try {
+        const company = await db('companies').where({ "id_company": id }).first()
+        if (!company) {
+            return res.status(404).json({ message: 'Company not found' })
+        }
+
+        if (company.logo && company.logo !== 'default.png') {
+            const logoPath = path.join(__dirname, '..', '..', 'assets', 'img', 'company', company.logo)
+            if (fs.existsSync(logoPath)) {
+                fs.unlinkSync(logoPath)
+            }
+        }
+
         const deleted = await db('companies').where({ "id_company": id }).del()
         if (!deleted) {
             return res.status(404).json({ message: 'Company not found' })
