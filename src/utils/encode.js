@@ -1,0 +1,3 @@
+export function encodeCustomId(id) {
+    return `45c48cce2e2d7fbdea1afc51c7c6ad${id}`;// sesuaikan dengan logika PHP-mu
+}

@@ -31,6 +31,7 @@ import panelCountriesRoutes from './routes/cockpit/locationCountries.js'
 import panelProvincesRoutes from './routes/cockpit/locationProvinces.js'
 import panelCitiesRoutes from './routes/cockpit/locationCities.js'
 import jobsRoutes from './routes/cockpit/jobs.js'
+import jobPendingRoutes from './routes/cockpit/jobpending.js'
 import freelanceRoutes from './routes/cockpit/freelance.js'
 import freelanceCatRoutes from './routes/cockpit/freelanceCat.js'
 import productRoutes from './routes/cockpit/product.js'
@@ -51,6 +52,7 @@ app.use('/cockpit/country', panelCountriesRoutes)
 app.use('/cockpit/province', panelProvincesRoutes)
 app.use('/cockpit/city', panelCitiesRoutes)
 app.use('/cockpit/job', jobsRoutes)
+app.use('/cockpit/jobpending', jobPendingRoutes)
 app.use('/cockpit/freelance', freelanceRoutes)
 app.use('/cockpit/freelancecat', freelanceCatRoutes)
 app.use('/cockpit/product', productRoutes)
@@ -61,10 +63,11 @@ app.use('/cockpit/testtype', testtypeRoutes)
 app.use('/cockpit/coin', coinRoutes)
 app.use('/cockpit/payment', paymentRoutes)
 app.use('/cockpit/scrapper', scrapperRoutes)
+app.use('/image/web', express.static(path.join(__dirname, './assets/img/web')))
 app.use('/image/company', express.static(path.join(__dirname, './assets/img/company')))
 app.use('/image/profil', express.static(path.join(__dirname, './assets/img/profil')))
-app.use('/image/product', express.static(path.join(__dirname, './assets/img/produk')))
-app.use('/image/product/digital', express.static(path.join(__dirname, './assets/img/produk/digital')))
+app.use('/image/product', express.static(path.join(__dirname, './assets/img/product')))
+app.use('/image/product/digital', express.static(path.join(__dirname, './assets/file')))
 
 app.get('/', (req, res) => {
     res.send('lowkerman')

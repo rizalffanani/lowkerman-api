@@ -22,27 +22,36 @@ const MESSAGES = {
 const handleError = (res, err) => res.status(500).json({ message: MESSAGES.DATABASE_ERROR, error: err.message });
 
 router.get('/', authenticateToken, authorizeRole(['admin']), pagination, async (req, res) => {
-    const { page = 1, limit = 10, search = '' } = req.query;
+    const { page = 1, limit = 10, search = '', id_city = '' } = req.query;
     try {
         const offset = (page - 1) * limit;
         const FIELDS_KEY = 'location_cities.name_city'
         const TABLE2 = 'location_provinces'
         const FIELDS = 'id_province'
+        const val = id_city.split(",")
 
-        const [data, totalData] = await Promise.all([
-            db(TABLE)
-                .select('location_cities.*', 'location_provinces.name_province')
-                .leftJoin(TABLE2, `${TABLE}.${FIELDS}`, `${TABLE2}.${FIELDS}`)
-                .where(FIELDS_KEY, 'like', `%${search}%`)
-                .orderBy(ID_COLUMN, 'desc')
-                .offset(offset)
-                .limit(limit),
-            db(TABLE)
-                .count(`${ID_COLUMN} as count`)
-                .leftJoin(TABLE2, `${TABLE}.${FIELDS}`, `${TABLE2}.${FIELDS}`)
-                .where(FIELDS_KEY, 'like', `%${search}%`)
-                .first()
-        ]);
+        let query = db(TABLE)
+            .select('location_cities.*', 'location_provinces.name_province')
+            .leftJoin(TABLE2, `${TABLE}.${FIELDS}`, `${TABLE2}.${FIELDS}`)
+            .where(FIELDS_KEY, 'like', `%${search}%`);
+
+        if (id_city) {
+            query = query.andWhere(ID_COLUMN, val[0]);
+        }
+
+        const dataQuery = query.orderBy(ID_COLUMN, 'desc').offset(offset).limit(limit)
+
+        const totalQuery = db(TABLE)
+            .leftJoin(TABLE2, `${TABLE}.${FIELDS}`, `${TABLE2}.${FIELDS}`)
+            .count('id_city as count')
+            .where(FIELDS_KEY, 'like', `%${search}%`)
+
+        if (id_city) {
+            totalQuery.andWhere(ID_COLUMN, val[0]);
+        }
+
+        const [data, totalData] = await Promise.all([dataQuery, totalQuery.first()]);
+
         res.status(200).json({
             total: totalData.count,
             page, limit,

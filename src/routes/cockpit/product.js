@@ -7,7 +7,7 @@ import { createUploader } from '../../config/multer.js'
 import productService from '../../services/product.services.js';
 
 const router = express.Router();
-const produkPosterUploader = createUploader('src/assets/img/produk')
+const produkPosterUploader = createUploader('src/assets/file')
 
 const TABLE = 'products';
 const ID_COLUMN = 'products.id_product';

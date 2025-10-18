@@ -18,24 +18,38 @@ const __dirname = dirname(__filename)
 
 // GET: Ambil semua perusahaan
 router.get('/', authenticateToken, authorizeRole(['admin']), pagination, async (req, res) => {
-    const { page = 1, limit = 10, search = '' } = req.query;
+    const { page = 1, limit = 10, search = '', active = '', id_company = '' } = req.query;
 
     try {
         const offset = (page - 1) * limit;
-        const data = await db('companies')
+        let query = db('companies')
             .select('*')
-            .where('name', 'like', `%${search}%`)
-            .orderBy('id_company', 'desc')
-            .offset(offset)
-            .limit(limit)
+            .where('name', 'like', `%${search}%`);
 
-        const totalCompanies = await db('companies').count('id_company as count').where('name', 'like', `%${search}%`).first()
+        if (id_company) {
+            query = query.andWhere('id_company', id_company);
+        }
+        if (active) {
+            query = query.andWhere('active', active);
+        }
+
+        const dataQuery = query.orderBy('id_company', 'desc').offset(offset).limit(limit)
+
+        const totalQuery = db('companies')
+            .count('id_company as count')
+            .where('name', 'like', `%${search}%`)
+
+        if (id_company) {
+            totalQuery.andWhere('id_company', id_company);
+        }
+
+        const [data, totalData] = await Promise.all([dataQuery, totalQuery.first()]);
 
         res.status(200).json({
-            total: totalCompanies.count,
+            total: totalData.count,
             page: req.pagination.page,
             limit: req.pagination.limit,
-            totalPages: Math.ceil(totalCompanies.count / limit),
+            totalPages: Math.ceil(totalData.count / limit),
             data: data,
         })
     } catch (err) {
