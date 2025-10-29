@@ -1,5 +1,4 @@
 import express from 'express'
-import bodyParser from 'body-parser'
 import path from 'path'
 import { fileURLToPath } from 'url'
 import dotenv from 'dotenv'
@@ -14,13 +13,26 @@ const __dirname = path.dirname(__filename)
 
 const app = express()
 // Enable CORS
+const allowedOrigins = [
+    'http://localhost:3000',
+    'http://localhost'
+];
+
 app.use(cors({
-    origin: 'http://localhost:3000', // Allow requests from your frontend origin
-    methods: ['GET', 'POST', 'PATCH', 'PUT', 'DELETE'], // Allowed HTTP methods
-    credentials: true// Allow cookies and authorization headers if needed
+    origin: function (origin, callback) {
+        if (!origin) return callback(null, true); // izinkan permintaan tanpa origin (misalnya Postman)
+        if (allowedOrigins.includes(origin)) {
+            return callback(null, true);
+        } else {
+            return callback(new Error('Not allowed by CORS'));
+        }
+    },
+    methods: ['GET', 'POST', 'PATCH', 'PUT', 'DELETE'],
+    credentials: true
 }));
 
-app.use(bodyParser.json())
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
 
 // Import routes
 import authRoutes from './routes/cockpit/auth.js'
@@ -43,6 +55,9 @@ import coinRoutes from './routes/cockpit/coin.js'
 import paymentRoutes from './routes/cockpit/payment.js'
 import scrapperRoutes from './routes/cockpit/scrapper.js'
 
+import apiFreelanceRoutes from './routes/api/freelance.js'
+import apiProductRoutes from './routes/api/product.js'
+import apiFreelanceOrderRoutes from './routes/api/freelanceOrder.js'
 // Gunakan routes
 app.use('/cockpit/auth', authRoutes)
 app.use('/cockpit/company', companiesRoutes)
@@ -63,12 +78,18 @@ app.use('/cockpit/testtype', testtypeRoutes)
 app.use('/cockpit/coin', coinRoutes)
 app.use('/cockpit/payment', paymentRoutes)
 app.use('/cockpit/scrapper', scrapperRoutes)
+
+app.use('/api/freelance', apiFreelanceRoutes)
+app.use('/api/freelance-order', apiFreelanceOrderRoutes)
+app.use('/api/product', apiProductRoutes)
+
 app.use('/image/web', express.static(path.join(__dirname, './assets/img/web')))
 app.use('/image/company', express.static(path.join(__dirname, './assets/img/company')))
 app.use('/image/profil', express.static(path.join(__dirname, './assets/img/profil')))
 app.use('/image/product', express.static(path.join(__dirname, './assets/img/product')))
 app.use('/image/product/digital', express.static(path.join(__dirname, './assets/file')))
 
+app.use('/uploads/profil', express.static(path.join(__dirname, './assets/img/profil')))
 app.get('/', (req, res) => {
     res.send('lowkerman')
 })

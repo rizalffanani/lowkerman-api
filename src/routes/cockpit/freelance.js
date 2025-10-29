@@ -24,8 +24,29 @@ const handleError = (res, err) => res.status(500).json({ message: MESSAGES.DATAB
 
 router.get('/', authenticateToken, authorizeRole(['admin']), pagination, async (req, res) => {
     const { search = '', sort = '', order = '', limit = 10, page = 1 } = req.query;
+    const selectColumns = [
+        'freelancers.id_freelance',
+        'freelancers.list',
+        'freelancers.slug',
+        'freelancers.id_freelance_cat',
+        'freelancers.id_user',
+        'freelancers.title',
+        'freelancers.desc',
+        'freelancers.price',
+        'freelancers.online',
+        'freelancers.offline',
+        'freelancers.id_city',
+        'freelancers.view',
+        'freelancers.active',
+        'freelancer_categories.name_freelance_cat',
+        'users.username',
+        'users.name',
+        'users.foto',
+        'users.link_url',
+        'location_cities.name_city'
+    ];
     try {
-        const [data, totalData] = await freelancerService.getAllFreelancers(search, sort, order, limit, page);
+        const [data, totalData] = await freelancerService.getAllFreelancers(search, sort, order, limit, page, selectColumns);
         res.status(200).json({
             total: totalData,
             page, limit,
