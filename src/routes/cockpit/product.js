@@ -7,7 +7,7 @@ import { createUploader } from '../../config/multer.js'
 import productService from '../../services/product.services.js';
 
 const router = express.Router();
-const produkPosterUploader = createUploader('src/assets/file')
+const produkPosterUploader = createUploader('src/assets/img/product')
 
 const TABLE = 'products';
 const ID_COLUMN = 'products.id_product';
@@ -28,8 +28,14 @@ const handleError = (res, err) => res.status(500).json({ message: MESSAGES.DATAB
 
 router.get('/', authenticateToken, authorizeRole(['admin']), pagination, async (req, res) => {
     const { search = '', sort = '', order = '', limit = 10, page = 1 } = req.query;
+    const selectColumns = [
+        'products.*',
+        'product_categories.slug_product_category',
+        'product_categories.name_product_category',
+        'users.username',
+    ];
     try {
-        const [data, totalData] = await productService.getAllProducts(search, sort, order, limit, page);
+        const [data, totalData] = await productService.getAllProducts(search, sort, order, limit, page, selectColumns);
         res.status(200).json({
             total: totalData,
             page, limit,

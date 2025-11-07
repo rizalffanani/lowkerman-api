@@ -3,7 +3,7 @@ import path from 'path'
 
 // ====== Allowed file types ======
 const allowedFileTypes = [
-    'pdf', 'doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx', 'txt'
+    'pdf', 'doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx', 'txt', 'png', 'webp', 'jpeg'
 ]
 
 // Fungsi untuk membuat konfigurasi storage dinamis

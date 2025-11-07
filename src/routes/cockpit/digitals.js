@@ -10,7 +10,7 @@ import { fileURLToPath } from 'url'
 import { dirname } from 'path'
 
 const router = express.Router();
-const digitalUploader = createFileUploader('src/assets/img/produk/digital')
+const digitalUploader = createFileUploader('src/assets/file/digital')
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
 
@@ -155,7 +155,7 @@ router.route('/:id')
             if (!data_last) return res.status(404).json({ message: MESSAGES.DATA_NOT_FOUND });
 
             if (data_last.file_digital) {
-                const oldPath = path.join(__dirname, '..', '..', 'assets', 'img', 'produk', 'digital', data_last.file_digital)
+                const oldPath = path.join(__dirname, '..', '..', 'assets', 'file', 'digital', data_last.file_digital)
                 fs.existsSync(oldPath) && fs.unlinkSync(oldPath);
             }
 

@@ -1,26 +1,24 @@
 import db from '../config/knex.js';
 
-async function getAllProducts(search, sort, order, limit, page, id) {
+async function getAllProducts(search, sort, order, limit, page, selectColumns, pcategory, pprice) {
     limit = Number(limit) > 0 ? Number(limit) : 10;
     page = Number(page) >= 0 ? Number(page) : 0;
     const offset = (page - 1) * limit;
     const allowedSort = [
-        'id_product', 'name_product', 'name_product_category', 'type_payment', 'real_price', 'order', 'view', 'rating'
+        'id_product', 'name_product', 'name_product_category', 'type_payment', 'real_price', 'order', 'view', 'rating',
+        'products.view', 'products.order', 'products.like'
     ];
     sort = allowedSort.includes(sort) ? sort : 'view';
-    order = (order && ['asc', 'desc'].includes(order)) ? order : 'desc';
-
-    const selectColumns = [
-        'products.*',
-        'product_categories.slug_product_category',
-        'product_categories.name_product_category',
-        'users.username',
-    ];
+    order = (order && ['asc', 'desc', 'ASC', 'DESC'].includes(order)) ? order : 'desc';
 
     let query = db('products')
         .select(selectColumns)
         .leftJoin('product_categories', 'products.id_product_category', 'product_categories.id_product_category')
         .leftJoin('users', 'products.id_user', 'users.id_user');
+
+    if (selectColumns[4]) query = query.where('products.active', '1');
+    if (pcategory) query = query.where('product_categories.slug_product_category', pcategory);
+    if (pprice) query = query.where('products.real_price', '<', pprice);
 
     if (search) {
         query = query.where(function () {
@@ -34,6 +32,10 @@ async function getAllProducts(search, sort, order, limit, page, id) {
     let countQuery = db('products')
         .leftJoin('product_categories', 'products.id_product_category', 'product_categories.id_product_category')
         .leftJoin('users', 'products.id_user', 'users.id_user');
+
+    if (selectColumns[4]) countQuery = countQuery.where('products.active', '1');
+    if (pcategory) countQuery = countQuery.where('product_categories.slug_product_category', pcategory);
+    if (pprice) countQuery = countQuery.where('products.real_price', '<', pprice);
 
     if (search) {
         countQuery = countQuery.where(function () {
