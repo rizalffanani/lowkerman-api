@@ -1,6 +1,6 @@
 import db from '../config/knex.js';
 
-async function getAll(search, sort, order, limit, page, id) {
+async function getAll(search, sort, order, limit, page, userId) {
     limit = Number(limit) > 0 ? Number(limit) : 10;
     page = Number(page) >= 0 ? Number(page) : 0;
     const offset = (page - 1) * limit;
@@ -18,6 +18,10 @@ async function getAll(search, sort, order, limit, page, id) {
         .leftJoin('location_cities', 'job_pendings.id_city', 'location_cities.id_city')
         .leftJoin('users', 'job_pendings.id_user', 'users.id_user');
 
+    if (userId) {
+        query = query.where('users.username', userId)
+    }
+
     if (search) {
         query = query.where(function () {
             this.where('job_pendings.name_job', 'like', `%${search}%`)
@@ -30,6 +34,10 @@ async function getAll(search, sort, order, limit, page, id) {
     let countQuery = db('job_pendings')
         .leftJoin('location_cities', 'job_pendings.id_city', 'location_cities.id_city')
         .leftJoin('users', 'job_pendings.id_user', 'users.id_user');
+
+    if (userId) {
+        countQuery = countQuery.where('users.username', userId)
+    }
 
     if (search) {
         countQuery = countQuery.where(function () {

@@ -33,8 +33,15 @@ const handleError = (res, err) => res.status(500).json({ message: MESSAGES.DATAB
 
 router.get('/', authenticateToken, authorizeRole(['admin']), pagination, async (req, res) => {
     const { search = '', sort = '', order = '', limit = 10, page = 1 } = req.query;
+    const selectColumns = [
+        'jobs.*',
+        'companies.logo',
+        'companies.name',
+        'users.username',
+        'location_cities.name_city'
+    ];
     try {
-        const [data, totalData] = await jobService.getAll(search, sort, order, limit, page);
+        const [data, totalData] = await jobService.getAll(search, sort, order, limit, page, selectColumns);
         res.status(200).json({
             total: totalData,
             page, limit,

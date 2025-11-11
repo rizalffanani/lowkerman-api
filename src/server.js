@@ -60,6 +60,8 @@ import apiProductRoutes from './routes/api/product.js'
 import apiFreelanceOrderRoutes from './routes/api/freelanceOrder.js'
 import apiDigitalRoutes from './routes/api/digital.js'
 import apiTestRoutes from './routes/api/test.js'
+import apiJobRoutes from './routes/api/jobs.js'
+import apiJobPendingRoutes from './routes/api/jobPending.js'
 // Gunakan routes
 app.use('/cockpit/auth', authRoutes)
 app.use('/cockpit/company', companiesRoutes)
@@ -86,6 +88,8 @@ app.use('/api/freelance-order', apiFreelanceOrderRoutes)
 app.use('/api/product', apiProductRoutes)
 app.use('/api/digital', apiDigitalRoutes)
 app.use('/api/test', apiTestRoutes)
+app.use('/api/jobs', apiJobRoutes)
+app.use('/api/job-pending', apiJobPendingRoutes)
 
 app.use('/image/web', express.static(path.join(__dirname, './assets/img/web')))
 app.use('/image/company', express.static(path.join(__dirname, './assets/img/company')))
@@ -93,6 +97,8 @@ app.use('/image/profil', express.static(path.join(__dirname, './assets/img/profi
 app.use('/image/product', express.static(path.join(__dirname, './assets/img/product')))
 app.use('/image/product/digital', express.static(path.join(__dirname, './assets/file/digital')))
 
+app.use('/uploads/loker/cover', express.static(path.join(__dirname, './assets/img/job/cover')))
+app.use('/uploads/logo-perusahaan', express.static(path.join(__dirname, './assets/img/company')))
 app.use('/uploads/profil', express.static(path.join(__dirname, './assets/img/profil')))
 app.use('/uploads/produk', express.static(path.join(__dirname, './assets/img/product')))
 app.use('/uploads/produk/digital', express.static(path.join(__dirname, './assets/file/digital')))
